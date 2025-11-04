@@ -3,6 +3,7 @@
 #it will create nginx config file link it to site-enabled. will create document root inside var/www and symlink that folder with a folder inside home directory.
 
 tld=lrvl
+usern=kaisar
 
 if [ "$(id -u)" -ne 0 ]; then
   echo "This script must be run as root or with sudo."
@@ -19,8 +20,8 @@ VAR=$1
 
 # Define the Nginx config path and content
 CONFIG_PATH="/etc/nginx/sites-available/$VAR.$tld"
-PROJECT_PATH="/home/kaisar/project/$VAR"
-PUBLIC_PATH="/var/www/$VAR/public"
+PROJECT_PATH="/home/$usern/project/$VAR"
+NGINX_ROOT="/var/www/$VAR/public"
 
 # Step 1: Create the project directory if it doesn't exist
 if [ ! -d "$PROJECT_PATH" ]; then
@@ -41,7 +42,7 @@ server {
 
     server_name $VAR.$tld;
 
-    root /var/www/$VAR/public;
+    root $NGINX_ROOT;
     index index.html index.php;
 
     # Increase client upload size limit
@@ -90,7 +91,7 @@ sudo ln -s "$CONFIG_PATH" "/etc/nginx/sites-enabled/$VAR.$tld"
 echo "Creating symlink for project directory..."
 sudo ln -s "$PROJECT_PATH" "/var/www/$VAR"
 
-sudo chown -R kaisar:kaisar "$PROJECT_PATH"
+sudo chown -R $usern:$usern "$PROJECT_PATH"
 
 NEW_LINE="127.0.0.1   $VAR.$tld"
 
