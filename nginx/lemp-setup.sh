@@ -9,9 +9,7 @@ set -e  # Exit on error
 # --------------------------
 # Variables (customize)
 # --------------------------
-DB_NAME="mydatabase"
-DB_USER="sakib"
-DB_PASS="sakib"
+
 MYSQL_ROOT_PASS="sakib"
 PHP_VERSION="8.3"
 
@@ -48,14 +46,6 @@ DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
 FLUSH PRIVILEGES;
 EOF
 
-# Create database and user
-echo "Creating database and user..."
-sudo mysql -u root -p"${MYSQL_ROOT_PASS}" <<EOF
-CREATE DATABASE ${DB_NAME};
-CREATE USER '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASS}';
-GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';
-FLUSH PRIVILEGES;
-EOF
 
 # --------------------------
 # Install PHP and extensions
@@ -153,6 +143,10 @@ EOF
 # Enable phpMyAdmin site
 sudo ln -s /etc/nginx/sites-available/phpmyadmin.conf /etc/nginx/sites-enabled/phpmyadmin.conf
 
+# add linux user to www-data group and vice-versa
+sudo usermod -aG www-data $USER
+sudo usermod -aG $USER www-data
+
 # Test Nginx configuration
 sudo nginx -t
 
@@ -168,7 +162,6 @@ sudo systemctl restart php${PHP_VERSION}-fpm
 echo "======================================"
 echo "LEMP Stack installation complete!"
 echo "MySQL root password: ${MYSQL_ROOT_PASS}"
-echo "Database: ${DB_NAME}, User: ${DB_USER}, Password: ${DB_PASS}"
 echo "PHP Version: ${PHP_VERSION}"
 echo "======================================"
 
