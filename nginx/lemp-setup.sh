@@ -10,7 +10,6 @@ set -e  # Exit on error
 # Variables (customize)
 # --------------------------
 
-LINUX_USER="kaisar"
 MYSQL_ROOT_PASS="sakib"
 PHP_VERSION="8.3"
 
@@ -145,8 +144,8 @@ EOF
 sudo ln -s /etc/nginx/sites-available/phpmyadmin.conf /etc/nginx/sites-enabled/phpmyadmin.conf
 
 # add linux user to www-data group and vice-versa
-sudo usermod -aG www-data $LINUX_USER
-sudo usermod -aG $LINUX_USER www-data
+sudo usermod -aG www-data $USER
+sudo usermod -aG $USER www-data
 
 # Test Nginx configuration
 sudo nginx -t
