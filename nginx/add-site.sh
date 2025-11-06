@@ -3,7 +3,8 @@
 #it will create nginx config file link it to site-enabled. will create document root inside var/www and symlink that folder with a folder inside home directory.
 
 tld=lrvl
-project_folder=project	#A folder inside your home directory
+project_folder=project	# A folder inside your home directory
+PHP_VERSION="8.3"
 
 if [ "$(id -u)" -ne 0 ]; then
   echo "This script must be run as root or with sudo."
@@ -58,7 +59,7 @@ server {
         include snippets/fastcgi-php.conf;
 
         # PHP-FPM socket (adjust as needed for your version)
-        fastcgi_pass unix:/run/php/php8.2-fpm.sock;
+        fastcgi_pass unix:/run/php/php${PHP_VERSION}-fpm.sock;
 
         # Ensure the Authorization header is passed to PHP
         fastcgi_param HTTP_AUTHORIZATION \$http_authorization;
