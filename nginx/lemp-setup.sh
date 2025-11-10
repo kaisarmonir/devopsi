@@ -9,9 +9,12 @@ set -e  # Exit on error
 # --------------------------
 # Variables (customize)
 # --------------------------
-
-MYSQL_ROOT_PASS="sakib"
+INSTALL_NODE=true
+MYSQL_ROOT_PASS="maruf"
+linux_user="maruf"
 PHP_VERSION="8.3"
+PHP_SECONDARY=true
+PHP_SECONDARY_VERSION="8.2"
 
 # --------------------------
 # Update system
@@ -23,7 +26,7 @@ sudo apt update -y
 # Install Nginx
 # --------------------------
 echo "Installing Nginx..."
-#sudo apt install nginx -y
+sudo apt install nginx -y
 sudo systemctl start nginx
 sudo systemctl enable nginx
 echo "Nginx installed."
@@ -59,6 +62,23 @@ sudo apt install php${PHP_VERSION} php${PHP_VERSION}-fpm php${PHP_VERSION}-cli p
 # Start and enable PHP-FPM
 sudo systemctl start php${PHP_VERSION}-fpm
 sudo systemctl enable php${PHP_VERSION}-fpm
+
+
+install_second_php() {
+    echo "Installing $PHP_SECONDARY_VERSION ..."
+    
+    sudo apt install php${PHP_SECONDARY_VERSION} php${PHP_SECONDARY_VERSION}-fpm php${PHP_SECONDARY_VERSION}-cli php${PHP_SECONDARY_VERSION}-mysql php${PHP_SECONDARY_VERSION}-curl php${PHP_SECONDARY_VERSION}-gd php${PHP_SECONDARY_VERSION}-mbstring php${PHP_SECONDARY_VERSION}-imagick php${PHP_SECONDARY_VERSION}-bcmath php${PHP_SECONDARY_VERSION}-xml php${PHP_SECONDARY_VERSION}-zip php${PHP_SECONDARY_VERSION}-intl -y
+
+    sudo systemctl start php${PHP_SECONDARY_VERSION}-fpm
+    sudo systemctl enable php${PHP_SECONDARY_VERSION}-fpm
+}
+
+if [ "$PHP_SECONDARY" = true ]; then
+    install_second_php
+else
+    echo "Skipping secondary php installation."
+fi
+
 
 # --------------------------
 # Configure Nginx for PHP
@@ -144,8 +164,8 @@ EOF
 sudo ln -s /etc/nginx/sites-available/phpmyadmin.conf /etc/nginx/sites-enabled/phpmyadmin.conf
 
 # add linux user to www-data group and vice-versa
-sudo usermod -aG www-data $USER
-sudo usermod -aG $USER www-data
+sudo usermod -aG www-data $linux_user
+sudo usermod -aG $linux_user www-data
 
 # Test Nginx configuration
 sudo nginx -t
@@ -158,6 +178,31 @@ sudo nginx -t
 sudo systemctl restart nginx
 sudo systemctl restart mysql
 sudo systemctl restart php${PHP_VERSION}-fpm
+
+
+install_node() {
+    echo "Installing CURL..."
+    sudo apt install curl
+    echo "Installing NVM..."
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+    # Load NVM into current shell session
+    export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+    echo "Installing Node.js 20..."
+    nvm install 20
+    nvm use 20
+    nvm alias default 20
+
+    echo "Node.js version installed: $(node -v)"
+}
+
+if [ "$INSTALL_NODE" = true ]; then
+    install_node
+else
+    echo "Skipping NVM and Node.js installation."
+fi
 
 echo "======================================"
 echo "LEMP Stack installation complete!"

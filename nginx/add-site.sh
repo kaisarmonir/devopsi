@@ -5,6 +5,7 @@
 tld=lrvl
 project_folder=project	# A folder inside your home directory
 PHP_VERSION="8.3"
+linux_user="maruf"
 
 if [ "$(id -u)" -ne 0 ]; then
   echo "This script must be run as root or with sudo."
@@ -21,7 +22,7 @@ VAR=$1
 
 # Define the Nginx config path and content
 CONFIG_PATH="/etc/nginx/sites-available/$VAR.$tld"
-PROJECT_PATH="/home/$USER/$project_folder/$VAR"
+PROJECT_PATH="/home/$linux_user/$project_folder/$VAR"
 NGINX_ROOT="/var/www/$VAR/public"
 
 # Step 1: Create the project directory if it doesn't exist
@@ -92,7 +93,7 @@ sudo ln -s "$CONFIG_PATH" "/etc/nginx/sites-enabled/$VAR.$tld"
 echo "Creating symlink for project directory..."
 sudo ln -s "$PROJECT_PATH" "/var/www/$VAR"
 
-sudo chown -R $USER:$USER "$PROJECT_PATH"
+sudo chown -R $linux_user:$linux_user "$PROJECT_PATH"
 
 NEW_LINE="127.0.0.1   $VAR.$tld"
 
