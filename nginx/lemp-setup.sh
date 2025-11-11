@@ -59,6 +59,9 @@ sudo add-apt-repository ppa:ondrej/php -y
 sudo apt update -y
 sudo apt install php${PHP_VERSION} php${PHP_VERSION}-fpm php${PHP_VERSION}-cli php${PHP_VERSION}-mysql php${PHP_VERSION}-curl php${PHP_VERSION}-gd php${PHP_VERSION}-mbstring php${PHP_VERSION}-imagick php${PHP_VERSION}-bcmath php${PHP_VERSION}-xml php${PHP_VERSION}-zip php${PHP_VERSION}-intl -y
 
+#Installing composer...
+sudo apt install composer -y
+
 # Start and enable PHP-FPM
 sudo systemctl start php${PHP_VERSION}-fpm
 sudo systemctl enable php${PHP_VERSION}-fpm
@@ -182,7 +185,7 @@ sudo systemctl restart php${PHP_VERSION}-fpm
 
 install_node() {
     echo "Installing CURL..."
-    sudo apt install curl
+    sudo apt install curl -y
     echo "Installing NVM..."
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 
