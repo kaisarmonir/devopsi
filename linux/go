@@ -1,3 +1,56 @@
 #!/bin/bash
 
-# change directory and opening a shell there
+# Define paths for different options
+declare -A PROJECT_PATHS
+PROJECT_PATHS[fn]="/home/foodnanny-demo/htdocs/demo.foodnanny.xyz"
+PROJECT_PATHS[qo]="/home/quickorder/htdocs/quickorder.app"
+# Add more paths as needed
+
+# Check if a parameter was provided
+if [ -z "$1" ]; then
+  echo "Usage: go <option>"
+  echo "Available options:"
+  for key in "${!PROJECT_PATHS[@]}"; do
+    echo "  - $key"
+  done
+  exit 1
+fi
+
+# Extract the option from the command (without the leading '-')
+OPTION="${1#-}"
+
+# Get the directory path associated with the option
+PROJECT_DIR=${PROJECT_PATHS[$OPTION]}
+
+# Verify the path exists
+if [ -z "$PROJECT_DIR" ]; then
+  echo "Invalid option: $OPTION"
+  exit 1
+fi
+
+# Change to the project directory
+cd "$PROJECT_DIR" || {
+  echo "Failed to change directory to $PROJECT_DIR. Directory does not exist."
+  exit 1
+}
+
+if [ "$2" == "-p" ]; then
+  echo "Running 'git pull' in $PROJECT_DIR..."
+  git pull origin main || {
+    echo "git pull failed."
+    exit 1
+  }
+fi
+
+# Optionally run 'npm run prod' if '-r' is passed
+if [ "$3" == "-r" ]; then
+  echo "Running 'npm run prod'..."
+  npm run prod || {
+    echo "npm run prod failed."
+    exit 1
+  }
+fi
+
+# Start an interactive bash shell in this directory
+exec bash
+
