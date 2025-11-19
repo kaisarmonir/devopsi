@@ -1,9 +1,9 @@
 #!/bin/bash
 
-DB_USER="kaisar"
-DB_PASS="PGjNp1dZBfWEtmjH"
+DB_USER="user"
+DB_PASS="Pass"
 DB_NAME="foodpi-demo"
-BACKUP_DIR="/home/foodpi-demo/htdocs/resources"
+BACKUP_DIR="/home/htdocs/resources"
 
 if [ -f "$BACKUP_DIR/$DB_NAME-cronjob-copy.sql" ]; then
     echo "Deleting old -copy backup: $BACKUP_DIR/$DB_NAME-cronjob-copy.sql"
@@ -23,4 +23,4 @@ else
     echo "Error creating the new backup. Please check the script or database credentials."
 fi
 
-mysql -ukaisar --password="PGjNp1dZBfWEtmjH" $DB_NAME < $BACKUP_DIR/$DB_NAME-cronjob.sql
+mysql -u$DB_USER --password="$DB_PASS" $DB_NAME < $BACKUP_DIR/$DB_NAME-cronjob.sql
